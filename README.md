@@ -15,7 +15,7 @@ yes
 * ~~i suck at rust~~
 * ffmpeg console keeps appearing with `windows_subsystem = "windows"`
 * layout is fucking awful
-* audio/video desync
+* audio/video desync - n00kii/egui-video#7
 
 ### keybinds
 
