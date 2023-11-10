@@ -1,0 +1,16 @@
+[package]
+name = "snip"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+eframe = "0.23.0"
+egui = "0.23.0"
+egui-video = "0.6.0"
+regex = "1.10.2"
+rfd = "0.12.1"
+
+[profile.release]
+opt-level = 3 # https://github.com/n00kii/egui-video#current-caveats
