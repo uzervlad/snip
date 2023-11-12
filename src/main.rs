@@ -21,6 +21,7 @@ struct SnipApp {
   player: Option<Player>,
   start: Option<i64>,
   end: Option<i64>,
+  merge_or_map: bool,
   audio_merge: u8,
 
   in_progress: Arc<Mutex<bool>>,
@@ -42,8 +43,14 @@ impl SnipApp {
       let mut args = vec![
         "-i".to_owned(), self.file_path.to_str().unwrap().to_string(),
         "-c:v".to_owned(), "libx264".to_owned(),
-        "-filter_complex".to_owned(), format!("amerge=inputs={}", self.audio_merge),
       ];
+      if self.merge_or_map {
+        args.push("-filter_complex".to_owned());
+        args.push(format!("amerge=inputs={}", self.audio_merge));
+      } else {
+        args.push("-map".to_owned());
+        args.push("0".to_owned());
+      }
       if let Some(start) = self.start {
         args.push("-ss".to_owned());
         args.push(format_ms(start));
@@ -107,6 +114,7 @@ impl SnipApp {
       start: None,
       end: None,
       audio_merge: 1,
+      merge_or_map: true,
 
       in_progress: Arc::new(Mutex::new(false)),
       progress: Arc::new(Mutex::new(0.)),
@@ -171,13 +179,18 @@ impl eframe::App for SnipApp {
             _ => {}
           }
         });
+        if ui.button("Cycle audio channel").clicked()
+          || ui.input(|i| i.key_pressed(Key::A)) {
+            player.cycle_audio_stream();
+        }
         {
-          if ui.button("Cycle audio channel").clicked()
-            || ui.input(|i| i.key_pressed(Key::A)) {
-              player.cycle_audio_stream();
+          ui.checkbox(&mut self.merge_or_map, "Merge audio channels");
+          if ui.input(|i| i.key_pressed(Key::M)) {
+            self.merge_or_map = !self.merge_or_map;
           }
-          let label = ui.label("Merge audio channels:");
-          ui.add(Slider::new(&mut self.audio_merge, 1..=4)).labelled_by(label.id);
+          if self.merge_or_map {
+            ui.add(Slider::new(&mut self.audio_merge, 1..=4));
+          }
         }
         if *self.in_progress.lock().unwrap() {
           let progress = *self.progress.lock().unwrap();

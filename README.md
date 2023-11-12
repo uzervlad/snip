@@ -23,5 +23,6 @@ yes
 * s - set start
 * e - set end
 * a - cycle audio channel
+* m - merge audio channels (on/off)
 * left/right arrows - seek 5s (shift = 1s)
 * enter - ***snip***
