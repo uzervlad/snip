@@ -40,17 +40,7 @@ impl SnipApp {
         fs::remove_file(&new).unwrap();
       }
 
-      let mut args = vec![
-        "-i".to_owned(), self.file_path.to_str().unwrap().to_string(),
-        "-c:v".to_owned(), "libx264".to_owned(),
-      ];
-      if self.merge_or_map {
-        args.push("-filter_complex".to_owned());
-        args.push(format!("amerge=inputs={}", self.audio_merge));
-      } else {
-        args.push("-map".to_owned());
-        args.push("0".to_owned());
-      }
+      let mut args = vec![];
       if let Some(start) = self.start {
         args.push("-ss".to_owned());
         args.push(format_ms(start));
@@ -59,6 +49,18 @@ impl SnipApp {
         args.push("-to".to_owned());
         args.push(format_ms(end));
       }
+      args.push("-i".to_owned());
+      args.push(self.file_path.to_str().unwrap().to_string());
+      args.push("-c:v".to_owned());
+      args.push("libx264".to_owned());
+      if self.merge_or_map {
+        args.push("-filter_complex".to_owned());
+        args.push(format!("amerge=inputs={}", self.audio_merge));
+      } else {
+        args.push("-map".to_owned());
+        args.push("0".to_owned());
+      }
+      
       args.push(new.to_str().unwrap().to_string());
 
       let in_progress = self.in_progress.clone();
